@@ -7,10 +7,10 @@
 
 namespace XWP\SiteCounts;
 
+use Mockery;
 use stdClass;
 use WP_Block;
 use WP_Mock;
-use Mockery;
 
 /**
  * Tests for class Block.
@@ -91,7 +91,7 @@ class TestBlock extends TestCase {
 					'className'           => self::CLASS_NAME,
 					'displayTemplateMode' => true,
 				],
-				'<div class="' . self::CLASS_NAME . '"><h2>Post Counts</h2><p>There are 0 Posts.</p><p>There are 0 Pages.</p><p>There are 0 Media.</p><p>The current post ID is ' . self::POST_ID . '.</p></div>',
+				'<div class="' . self::CLASS_NAME . '"><h2>Post Counts</h2><ul><li>There are 0 Posts.</li><li>There are 0 Pages.</li><li>There are 0 Media.</li></ul><p>The current post ID is ' . self::POST_ID . '.</p><h2>Any 5 posts with the tag of foo and the category of baz</h2><ul><li>Example Post 0</li><li>Example Post 1</li><li>Example Post 2</li><li>Example Post 3</li><li>Example Post 4</li></ul></div>',
 			],
 			'with_post_counts' => [
 				63,
@@ -101,7 +101,7 @@ class TestBlock extends TestCase {
 					'className'           => self::CLASS_NAME,
 					'displayTemplateMode' => true,
 				],
-				'<div class="' . self::CLASS_NAME . '"><h2>Post Counts</h2><p>There are 63 Posts.</p><p>There are 13 Pages.</p><p>There are 139 Media.</p><p>The current post ID is ' . self::POST_ID . '.</p></div>',
+				'<div class="' . self::CLASS_NAME . '"><h2>Post Counts</h2><ul><li>There are 63 Posts.</li><li>There are 13 Pages.</li><li>There are 139 Media.</li></ul><p>The current post ID is ' . self::POST_ID . '.</p><h2>Any 5 posts with the tag of foo and the category of baz</h2><ul><li>Example Post 0</li><li>Example Post 1</li><li>Example Post 2</li><li>Example Post 3</li><li>Example Post 4</li></ul></div>',
 			],
 		];
 	}
@@ -132,7 +132,16 @@ class TestBlock extends TestCase {
 		$this->mock_get_posts( $page_count );
 		$this->mock_get_posts( $attachment_count );
 
-		Mockery::mock( 'overload:WP_Block' );
+		WP_Mock::userFunction( 'get_the_ID' );
+		Mockery::mock( 'WP_Block' );
+
+		$mock_posts    = $this->get_posts();
+		$wp_query_mock = Mockery::instanceMock( 'overload:WP_Query' );
+		$wp_query_mock->shouldReceive( '__construct' )
+			->once()
+			->andSet( 'found_posts', [ count( $mock_posts ) ] )
+			->andSet( 'posts', $mock_posts );
+
 		$actual = $this->instance->render_callback( $attributes, '', new WP_Block() );
 		$actual = preg_replace( '/(?<=>)\s+/', '', $actual );
 		$actual = preg_replace( '/\s+(?=<)/', '', $actual );
@@ -169,5 +178,21 @@ class TestBlock extends TestCase {
 		WP_Mock::userFunction( 'get_posts' )
 			->once()
 			->andReturn( array_fill( 0, $post_count, new stdClass() ) );
+	}
+
+	/**
+	 * Gets the posts.
+	 *
+	 * @return stdClass[] The posts.
+	 */
+	public function get_posts() {
+		$posts = [];
+		for ( $i = 0; $i < 5; $i++ ) {
+			$post             = new stdClass();
+			$post->post_title = "Example Post {$i}";
+			$posts[]          = $post;
+		}
+
+		return $posts;
 	}
 }
