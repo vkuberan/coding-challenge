@@ -24,6 +24,7 @@
     "lint": "npm-run-all --parallel lint:*",
     "lint:js": "wp-scripts lint-js js/src",
     "lint:php": "composer lint",
+    "lint:php:fix": "composer lint-fix",
     "packages-update": "wp-scripts packages-update",
     "test": "npm-run-all --parallel test:js test:php",
     "test:coverage": "npm-run-all --parallel test:js:coverage test:php:coverage",

@@ -32,7 +32,11 @@
   "scripts": {
     "lint": [
       "@composer validate --strict",
-      "phpcs ."
+      "phpcs"
+    ],
+    "lint-fix": [
+      "@composer validate --strict",
+      "phpcbf"
     ],
     "test": [
       "phpunit --do-not-cache-result"
