@@ -62,28 +62,29 @@ class Block {
 	 * @return string The markup of the block.
 	 */
 	public function render_callback( $attributes, $content, $block ) {
-		$post_types = get_post_types( [ 'public' => true ] );
+		$post_types = get_post_types(  [ 'public' => true ] );
 		$class_name = $attributes['className'];
 		ob_start();
 
 		?>
-		<div class="<?php echo $class_name; ?>">
+        <div class="<?php echo $class_name; ?>">
 			<h2>Post Counts</h2>
 			<?php
 			foreach ( $post_types as $post_type_slug ) :
-				$post_type_object = get_post_type_object( $post_type_slug );
-				$post_count = count(
-					get_posts(
+                $post_type_object = get_post_type_object( $post_type_slug  );
+                $post_count = count(
+                    get_posts(
 						[
 							'post_type' => $post_type_slug,
 							'posts_per_page' => -1,
 						]
 					)
-				);
+                );
 
 				?>
-				<p><?php echo 'There are ' . $post_count . ' ' . $post_type_object->labels->name . '.'; ?></p>
-			<?php endforeach; ?>
+				<p><?php echo 'There are ' . $post_count . ' ' .
+					  $post_type_object->labels->name . '.'; ?></p>
+			<?php endforeach;	?>
 			<p><?php echo 'The current post ID is ' . $_GET['post_id'] . '.'; ?></p>
 		</div>
 		<?php
