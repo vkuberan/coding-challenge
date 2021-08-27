@@ -91,8 +91,6 @@ class Block {
 
 			<?php
 			$query = new WP_Query(  array(
-				'posts_per_page' => -1,
-                'cache_results' => false,
                 'tag'  => 'foo',
                 'category_name'  => 'baz',
 				 'post__not_in' => [ get_the_ID() ],
