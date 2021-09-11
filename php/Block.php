@@ -62,29 +62,49 @@ class Block {
 	 * @return string The markup of the block.
 	 */
 	public function render_callback( $attributes, $content, $block ) {
+		global $post;
 		$post_types = get_post_types( [ 'public' => true ] );
 		$class_name = $attributes['className'];
 		ob_start();
 
 		?>
-		<div class="<?php echo $class_name; ?>">
-			<h2>Post Counts</h2>
+		<div class="<?php echo esc_attr( $class_name ); ?>">
+			<h2><?php esc_html__( 'Post Counts', 'site-counts' ); ?></h2>
 			<?php
 			foreach ( $post_types as $post_type_slug ) :
 				$post_type_object = get_post_type_object( $post_type_slug );
-				$post_count = count(
+				$post_count       = count(
 					get_posts(
 						[
-							'post_type' => $post_type_slug,
+							'post_type'      => $post_type_slug,
 							'posts_per_page' => -1,
 						]
 					)
 				);
 
 				?>
-				<p><?php echo 'There are ' . $post_count . ' ' . $post_type_object->labels->name . '.'; ?></p>
+				<p>
+					<?php
+						echo sprintf(
+							/* translators: %2$s is replaced with "int", %2$s is replaced with "string" */
+							esc_html__( 'There are %1$d %2$s.', 'site-counts' ),
+							esc_attr( $post_count ),
+							esc_attr( $post_type_object->labels->name )
+						);
+					?>
+				</p>
 			<?php endforeach; ?>
-			<p><?php echo 'The current post ID is ' . $_GET['post_id'] . '.'; ?></p>
+			<p>
+				<?php
+				if ( isset( $post->ID ) ) {
+					echo sprintf(
+						/* translators: %1$s is replaced with "int"" */
+						esc_html__( 'The current post ID is %1$d.', 'site-counts' ),
+						esc_attr( $post->ID )
+					);
+				}
+				?>
+			</p>
 		</div>
 		<?php
 
