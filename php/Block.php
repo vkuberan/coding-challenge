@@ -64,7 +64,7 @@ class Block {
 	public function render_callback( $attributes, $content, $block ) {
 		global $post;
 		$post_types = get_post_types( [ 'public' => true ] );
-		$class_name = $attributes['className'];
+		$class_name = isset( $attributes['className'] ) ? $attributes['className'] : '';
 		ob_start();
 
 		?>
@@ -81,6 +81,10 @@ class Block {
 						]
 					)
 				);
+
+				if ( '' === $post_count ) {
+					$post_count = 0;
+				}
 
 				?>
 				<p>
