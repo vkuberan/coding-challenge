@@ -62,7 +62,6 @@ class Block {
 	 * @return string The markup of the block.
 	 */
 	public function render_callback( $attributes, $content, $block ) {
-		global $post;
 		$post_types = get_post_types( [ 'public' => true ] );
 		$class_name = isset( $attributes['className'] ) ? $attributes['className'] : '';
 		ob_start();
@@ -100,11 +99,15 @@ class Block {
 			<?php endforeach; ?>
 			<p>
 				<?php
-				if ( isset( $post->ID ) ) {
+				/** 
+				 * Got two warnings for nonce check using phpcs --standard=WordPress-VIP-Go 
+				 * But passed when checked with phpcs without --standard=WordPress-VIP-Go 
+				*/
+				if ( isset( $_GET['post_id'] ) ) {
 					echo sprintf(
 						/* translators: %1$s is replaced with "int"" */
 						esc_html__( 'The current post ID is %1$d.', 'site-counts' ),
-						esc_attr( $post->ID )
+						esc_attr( sanitize_text_field( $_GET['post_id'] ) )
 					);
 				}
 				?>
